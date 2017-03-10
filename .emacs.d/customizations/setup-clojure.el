@@ -10,8 +10,6 @@
 ;; Java classes (e.g. JavaClassName)
 (add-hook 'clojure-mode-hook 'subword-mode)
 
-;;(add-hook 'clojure-mode-hook 'aggressive-indent-mode)
-
 ;; A little more syntax highlighting
 (require 'clojure-mode-extra-font-locking)
 
@@ -54,7 +52,7 @@
 (setq cider-boot-parameters "cider repl -s wait")
 
 ;; enable paredit in your REPL
-(add-hook 'cider-repl-mode-hook 'parinfer-mode)
+(add-hook 'cider-repl-mode-hook 'smartparens-strict-mode)
 
 ;; Use clojure mode for other extensions
 (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))

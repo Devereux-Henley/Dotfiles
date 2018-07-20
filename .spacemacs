@@ -31,46 +31,63 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     ;; artisan
+     typescript
      sql
+     ;; yaml
+     windows-scripts
+     (markdown :variables
+               markdown-live-preview-engine 'vmd)
      html
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
+     javascript
+     clojure
      helm
+     org
+     ;; latex
+     ;; octave
      auto-completion
-     ;; better-defaults
      emacs-lisp
-
      git
-     ;; markdown
-     ;; org
+     csharp
+     restclient
+     ;; (haskell :variables
+     ;;          haskell-completion-backend 'intero
+     ;;          haskell-enable-hindent-style "johan-tibell")
+     ;; elm
+     ;; java
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
-     ;; spell-checking
      syntax-checking
      ;; version-control
-     clojure
-     javascript)
-   ;; List of additional packages that will be installed without being
-   ;; wrapped in a layer. If you need some configuration for these
-   ;; packages, then consider creating a layer. You can also put the
-   ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(gruvbox-theme)
-   ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
-   ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
-   ;; Defines the behaviour of Spacemacs when installing packages.
-   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
-   ;; `used-only' installs only explicitly used packages and uninstall any
-   ;; unused packages as well as their unused dependencies.
-   ;; `used-but-keep-unused' installs only the used packages but won't uninstall
-   ;; them if they become unused. `all' installs *all* packages supported by
-   ;; Spacemacs and never uninstall them. (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+     )
+  ;; List of additional packages that will be installed without being
+  ;; wrapped in a layer. If you need some configuration for these
+  ;; packages, then consider creating a layer. You can also put the
+  ;; configuration in `dotspacemacs/user-config'.
+   dotspacemacs-additional-packages '(
+                                      ;; ox-gfm
+                                      ripgrep
+                                      ;; htmlize
+                                      ssh-agency
+                                      ;; dotnet
+                                      ;; danneskjold-theme
+                                      hc-zenburn-theme
+                                      gruvbox-theme
+                                      feature-mode
+                                      )
+  ;; A list of packages that cannot be updated.
+  dotspacemacs-frozen-packages '()
+  ;; A list of packages that will not be installed and loaded.
+  dotspacemacs-excluded-packages '(sql-indent)
+  ;; Defines the behaviour of Spacemacs when installing packages.
+  ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+  ;; `used-only' installs only explicitly used packages and uninstall any
+  ;; unused packages as well as their unused dependencies.
+  ;; `used-but-keep-unused' installs only the used packages but won't uninstall
+  ;; them if they become unused. `all' installs *all* packages supported by
+  ;; Spacemacs and never uninstall them. (default is `used-only')
+  dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -107,6 +124,7 @@ values."
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
+   dotspacemacs-mode-line-theme 'spacemacs
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
@@ -126,12 +144,17 @@ values."
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'org-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(default
-                          spacemacs-dark)
+   dotspacemacs-themes '(
+                         ;;danneskjold
+                         hc-zenburn
+                         gruvbox
+                         spacemacs-dark
+                         spacemacs-light
+                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -163,7 +186,7 @@ values."
    ;; and TAB or <C-m> and RET.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
-   dotspacemacs-distinguish-gui-tab nil
+   dotspacemacs-distinguish-gui-tab t
    ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
    dotspacemacs-remap-Y-to-y$ nil
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
@@ -195,7 +218,7 @@ values."
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
    ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize t
+   dotspacemacs-helm-resize nil
    ;; if non nil, the helm header is hidden when there is only one source.
    ;; (default nil)
    dotspacemacs-helm-no-header nil
@@ -221,7 +244,7 @@ values."
    ;; If non nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
-   dotspacemacs-loading-progress-bar nil
+   dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
    dotspacemacs-fullscreen-at-startup nil
@@ -231,7 +254,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   dotspacemacs-maximized-at-startup nil
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -250,10 +273,20 @@ values."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -263,7 +296,7 @@ values."
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc…
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
-   dotspacemacs-smart-closing-parenthesis t
+   dotspacemacs-smart-closing-parenthesis nil
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
@@ -274,7 +307,7 @@ values."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -284,7 +317,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup 'trailing
+   dotspacemacs-whitespace-cleanup nil
    ))
 
 (defun dotspacemacs/user-init ()
@@ -294,6 +327,69 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  (spacemacs|use-package-add-hook org
+    :pre-init
+    (package-initialize))
+  )
+
+(defun csharp-mode-setup ()
+  (setq indent-tabs-mode nil)
+  (setq c-syntactic-indentation t)
+  (c-set-style "ellemtel")
+  (setq c-basic-offset 3)
+  (setq truncate-lines t)
+  (setq evil-shift-width 3)
+  )
+
+(defun tslint-fix-file ()
+  "Tslint fix file."
+  (interactive)
+  (message (concat "tslint --fixing the file " (buffer-file-name)))
+  (shell-command (concat "tslint --fix " (buffer-file-name))))
+
+(defun tslint-fix-file-and-revert ()
+
+  "Format the current file with TSLint."
+  (interactive)
+  (when (eq major-mode 'typescript-mode)
+    (if (executable-find "tslint")
+        (tslint-fix-file)
+      (message "TSLint not found."))))
+
+(defun typescript-mode-setup ()
+  (setq typescript-indent-level 2)
+  (spacemacs/declare-prefix-for-mode 'typescript-mode "ml" "typescript/lint")
+  (spacemacs/set-leader-keys-for-major-mode 'typescript-mode
+    "lf" 'tslint-fix-file-and-revert))
+
+(defun clojure-mode-setup ()
+  (setq clojure-enable-fancify-symbols t)
+
+  ;; Set preferred clojure indent style.
+  (setq clojure-indent-style :always-indent)
+
+  ;; Set clojure vertical alignment.
+  (setq clojure-align-forms-automatically t)
+
+  ;; Set cider w/ lein to use dev profile by default for repl.
+  (setq cider-lein-parameters "with-profile +dev do repl")
+  ;;(setq cider-lein-parameters "monolith with-all do repl")
+
+  ;; Enable safe structural editing.
+  (spacemacs/toggle-evil-safe-lisp-structural-editing-on)
+
+  ;; Someday add monolith bindings.
+  (spacemacs/declare-prefix-for-mode 'clojure-mode "mm" "clojure/monolith")
+  )
+
+(defun clojurescript-mode-setup ()
+  ;; If using cljs repl stuff, use shadow cljs.
+  ;; This probably deserves a cider fork or seperate package.
+  (setq cider-cljs-lein-repl
+        "(do (require 'shadow.cljs.devtools.api) (require 'shadow.cljs.devtools.server) (shadow.cljs.devtools.server/start!) (shadow.cljs.devtools.api/watch :main) (shadow.cljs.devtools.api/nrepl-select :main))")
+
+  (spacemacs/toggle-evil-safe-lisp-structural-editing-on)
   )
 
 (defun dotspacemacs/user-config ()
@@ -304,23 +400,44 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (spacemacs/load-theme 'gruvbox)
+  ;; Set tab-stop to 3.
+  (setq tab-stop-list (number-sequence 3 120 3))
 
-  ;; Clojure customizations
-  (setq clojure-enable-fancify-symbols t)
+  ;; C#
 
-  (setq clojure-indent-style :always-indent)
+  ;; Add setup hook to csharp-mode
+  (add-hook 'csharp-mode-hook 'csharp-mode-setup t)
 
-  ;; Javascript customizations
-  (setq-default js2-basic-offset 2)
+  ;; Clojure
 
-  (setq-default js-indent-level 2)
+  (add-hook 'clojure-mode-hook 'clojure-mode-setup t)
+  (add-hook 'clojurescript-mode-hook 'clojurescript-mode-setup t)
 
-  ;; Misc
-  (setq create-lockfiles nil))
+  ;; Git
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
+  ;; Tell openSSH to use git-gui for rsa key pass on per session basis.
+  (setenv "SSH_ASKPASS" "git-gui--askpass")
+
+  ;; Javascript/JSON
+
+  ;; Set javascript/JSON indent to 2
+  (setq js-indent-level 2)
+
+  ;; Typescript
+
+  (add-hook 'typescript-mode-hook 'typescript-mode-setup)
+
+  ;; Hotfixes
+
+  ;; Fixes bug w/ missing function definition
+  (require 'helm-bookmark)
+  )
+
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -329,10 +446,11 @@ you should place your code here."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (helm-company helm-c-yasnippet flycheck-pos-tip pos-tip flycheck company-web web-completion-data company-tern dash-functional company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete sql-indent web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help spotify helm-spotify multi tern web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc coffee-mode smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit with-editor gruvbox-theme autothemer gruvbox-dark-theme clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider seq queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme))))
+    (tide org-brain hl-todo counsel-projectile counsel ivy helm helm-core cider yasnippet-snippets xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package typescript-mode toc-org tagedit symon swiper string-inflection ssh-agency spaceline-all-the-icons smeargle slim-mode shell-pop sesman scss-mode sayid sass-mode ripgrep restclient-helm restart-emacs rainbow-delimiters queue pug-mode powershell popwin persp-mode pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omnisharp ob-restclient ob-http neotree nameless multi-term move-text mmm-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode json-navigator json-mode js2-refactor js-doc indent-guide impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme google-translate golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode clojure-snippets clojure-cheatsheet clj-refactor clean-aindent-mode cider-eval-sexp-fu centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+)

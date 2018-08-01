@@ -349,7 +349,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (shell-command (concat "tslint --fix " (buffer-file-name))))
 
 (defun tslint-fix-file-and-revert ()
-
   "Format the current file with TSLint."
   (interactive)
   (when (eq major-mode 'typescript-mode)
@@ -392,6 +391,43 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (spacemacs/toggle-evil-safe-lisp-structural-editing-on)
   )
 
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "PROGRESS"))))
+
+(defun org-mode-setup ()
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PROGRESS(p!)" "BLOCKED(b@/!)" "REVIEW(r@/!)" "|" "DONE(d!)" "ARCHIVED(a!)")))
+
+  (setq org-todo-keyword-faces
+        '(("TODO" . org-warning)
+          ("PROGRESS" . "yellow")
+          ("BLOCKED" . "red")
+          ("REVIEW" . "orange")
+          ("DONE" . "green")
+          ("ARCHIVED" .  "blue")))
+
+  (setq org-global-properties '(("Effort_ALL" . "8:00 16:00 24:00 32:00 40:00")))
+
+  ;; Include diary in agenda
+  (setq org-agenda-include-diary t)
+
+  (setq org-tag-alist '((:startgroup . nil) ("@Work" . ?w) ("@Home" . ?h) (:endgroup . nil)
+                        ("Resource" . nil)
+                        (:startgroup . nil) ("Repository" . ?g) ("DataModel" . ?d) (:endgroup . nil)
+                        (:startgroup . nil) ("Remote" . ?r) ("Local" . ?l) (:endgroup . nil)
+                        ("Task" . ?t)
+                        ("Service" . ?s)
+                        ("Migration" . ?m)
+                        ("Planning" . ?p)
+                        ))
+
+  (setq org-columns-default-format '"%40ITEM(Task) %TAGS(Topics) %TODO(Status) %3PRIORITY(Priority) %Effort(Estimate){:} %6CLOCKSUM(Time)")
+
+  (spacemacs/toggle-mode-line-org-clock-on)
+  )
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -424,8 +460,11 @@ you should place your code here."
   (setq js-indent-level 2)
 
   ;; Typescript
-
   (add-hook 'typescript-mode-hook 'typescript-mode-setup)
+
+  ;; Org
+  (add-hook 'org-mode-hook 'org-mode-setup)
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
   ;; Hotfixes
 
